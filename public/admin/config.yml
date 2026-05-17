@@ -2,7 +2,7 @@ backend:
   name: github
   repo: mamaland-bg/mamaland-bg.github.io
   branch: main
-  base_url: https://YOUR-WORKER.workers.dev
+  base_url: https://mamaland-auth.boyankiuranov.workers.dev
   site_domain: www.mamaland.bg
 
 media_folder: public/images
