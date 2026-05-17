@@ -24,7 +24,6 @@ const now = new Date();
 const isPast = startDate < now;
 
 const dateFmt = new Intl.DateTimeFormat('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' });
-const timeFmt = new Intl.DateTimeFormat('bg-BG', { hour: '2-digit', minute: '2-digit' });
 
 const formattedDate = endDate
   ? `${dateFmt.format(startDate)} – ${dateFmt.format(endDate)}`

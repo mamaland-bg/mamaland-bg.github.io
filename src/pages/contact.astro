@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import contact from '../data/contact.json';
 ---
 
 <Base title="Контакт — Mamaland" description="Свържете се с екипа на Mamaland.">
@@ -24,32 +25,28 @@ import Base from '../layouts/Base.astro';
 
           <div class="contact-item">
             <div class="contact-label">Email</div>
-            <a href="mailto:hello@mamaland.bg" class="contact-value">hello@mamaland.bg</a>
+            <a href={`mailto:${contact.email}`} class="contact-value">{contact.email}</a>
           </div>
 
           <div class="contact-item">
             <div class="contact-label">Instagram</div>
-            <a href="https://www.instagram.com/mamaland.sofia/" target="_blank" rel="noopener" class="contact-value">@mamaland.sofia</a>
+            <a href={contact.instagramUrl} target="_blank" rel="noopener" class="contact-value">{contact.instagramHandle}</a>
           </div>
 
           <div class="contact-item">
             <div class="contact-label">Запазване на час</div>
             <p class="contact-value">
               Д-р Мерилин Иванова приема пациенти в<br/>
-              <strong>Медицински център Nuviva</strong><br/>
-              Бул. Черни връх 155, сграда Nexa<br/>
-              София
+              <strong>{contact.clinicName}</strong><br/>
+              {contact.clinicAddress}
             </p>
-            <a href="tel:+35989999156" class="btn btn-primary" style="margin-top: 0.75rem;">
-              📞 +359 89 999 9156
+            <a href={`tel:${contact.phoneRaw}`} class="btn btn-primary" style="margin-top: 0.75rem;">
+              📞 {contact.phone}
             </a>
           </div>
 
           <div class="contact-note">
-            <p>
-              <em>Mamaland не е заместител на медицинска консултация.
-              За въпроси, изискващи преглед, моля запазете час.</em>
-            </p>
+            <p><em>{contact.disclaimer}</em></p>
           </div>
         </div>
 

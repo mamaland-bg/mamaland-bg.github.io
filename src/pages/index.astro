@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import SeminarCard from '../components/SeminarCard.astro';
 import { getCollection } from 'astro:content';
+import home from '../data/home.json';
 
 const allArticles = await getCollection('articles', ({ data }) => !data.draft);
 const latestArticles = allArticles
@@ -25,15 +26,12 @@ const upcomingSeminar = allSeminars
       <div class="shape shape-3"></div>
     </div>
     <div class="container-narrow hero-content">
-      <div class="eyebrow">МАМИНАТА ЗЕМЯ</div>
+      <div class="eyebrow">{home.heroEyebrow}</div>
       <h1 class="hero-title">
-        <span class="script hero-script">Здраве и спокойствие</span>
-        <span class="hero-sub">за всяко малко сърце</span>
+        <span class="script hero-script">{home.heroHeading}</span>
+        <span class="hero-sub">{home.heroSub}</span>
       </h1>
-      <p class="hero-lede">
-        Прочити, статии и семинари за детското здраве и развитие — от педиатър и психолог,
-        които вярват, че информираните родители са най-доброто лекарство.
-      </p>
+      <p class="hero-lede">{home.heroLede}</p>
       <div class="hero-actions">
         <a href="/articles" class="btn btn-primary">Прочети последните статии →</a>
         <a href="/about" class="btn btn-ghost">За нас</a>
@@ -105,16 +103,8 @@ const upcomingSeminar = allSeminars
         <div class="about-text">
           <div class="eyebrow">ЗАПОЗНАЙТЕ СЕ</div>
           <h2 class="script">с нас</h2>
-          <p class="about-lede">
-            Mamaland е създаден от <em>д-р Мерилин Иванова</em> — педиатър и клиничен
-            психолог с дългогодишен опит в детското здравеопазване. След години в
-            Спешна педиатрия на Пирогов и работа по време на пандемията, тя
-            преминава към семейна медицина в Nuviva.
-          </p>
-          <p class="about-lede">
-            Тук споделяме знания, събрани от години практика с деца и техните семейства —
-            научно базирани, но изговорени с топлота и уважение към всеки родител.
-          </p>
+          <p class="about-lede">{home.aboutPara1}</p>
+          <p class="about-lede">{home.aboutPara2}</p>
           <a href="/about" class="btn btn-secondary">Прочетете повече →</a>
         </div>
         <div class="about-visual" aria-hidden="true">
@@ -128,15 +118,13 @@ const upcomingSeminar = allSeminars
   <section class="section section-periwinkle">
     <div class="container-narrow">
       <div class="newsletter">
-        <h2 class="script newsletter-script">Бъдете в крак</h2>
-        <p class="newsletter-lede">
-          Получавайте нови статии и информация за предстоящи семинари директно в пощата си.
-        </p>
+        <h2 class="script newsletter-script">{home.newsletterHeading}</h2>
+        <p class="newsletter-lede">{home.newsletterLede}</p>
         <form class="newsletter-form" action="#" method="POST" data-netlify="true" name="newsletter">
           <input type="email" name="email" placeholder="вашият имейл" required aria-label="Имейл адрес" />
           <button type="submit" class="btn btn-secondary">Запиши се</button>
         </form>
-        <p class="newsletter-fineprint">Без спам. Можете да се отпишете по всяко време.</p>
+        <p class="newsletter-fineprint">{home.newsletterFinePrint}</p>
       </div>
     </div>
   </section>
