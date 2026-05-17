@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: YOUR_GITHUB_USERNAME/mamaland-sofia
+  repo: mamaland-bg/mamaland-bg.github.io
   branch: main
   base_url: https://YOUR-WORKER.workers.dev
   site_domain: www.mamaland.bg
