@@ -1,0 +1,106 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/mamaland-sofia
+  branch: main
+  base_url: https://YOUR-WORKER.workers.dev
+  site_domain: www.mamaland.bg
+
+media_folder: public/images
+public_folder: /images
+
+site_url: https://www.mamaland.bg
+display_url: https://www.mamaland.bg
+logo_url: /favicon.svg
+
+locale: bg
+
+editor:
+  preview: false
+
+collections:
+  - name: articles
+    label: Статии
+    label_singular: Статия
+    folder: src/content/articles
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    extension: md
+    format: frontmatter
+    summary: '{{title}} — {{date | date("DD.MM.YYYY")}}'
+    sortable_fields: [date, title]
+    view_filters:
+      - label: Чернови
+        field: draft
+        pattern: true
+      - label: Публикувани
+        field: draft
+        pattern: false
+    fields:
+      - { name: title, label: Заглавие, widget: string }
+      - { name: excerpt, label: Кратко описание, widget: text, hint: "1-2 изречения, които ще се виждат в листинга" }
+      - { name: date, label: Дата на публикуване, widget: datetime, format: 'YYYY-MM-DD', date_format: 'DD.MM.YYYY', time_format: false, picker_utc: false }
+      - name: category
+        label: Категория
+        widget: select
+        options:
+          - { label: Имунитет, value: imunitet }
+          - { label: Хранене, value: hranene }
+          - { label: Развитие, value: razvitie }
+          - { label: Психология, value: psihologia }
+          - { label: Имунизации, value: imunizacii }
+          - { label: Спешни ситуации, value: speshni }
+          - { label: Общо, value: obshto }
+      - { name: cover, label: Корица (снимка), widget: image, required: false, hint: "Препоръчителен размер 1200x900px, под 500KB" }
+      - { name: coverAlt, label: Описание на корицата, widget: string, required: false, hint: "За хора със зрителни увреждания" }
+      - { name: author, label: Автор, widget: string, default: 'д-р Мерилин Иванова' }
+      - { name: draft, label: Чернова, widget: boolean, default: false, hint: "Маркирай за да не се публикува все още" }
+      - { name: body, label: Съдържание, widget: markdown }
+
+  - name: seminars
+    label: Семинари
+    label_singular: Семинар
+    folder: src/content/seminars
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    extension: md
+    format: frontmatter
+    summary: '{{title}} — {{date | date("DD.MM.YYYY")}}'
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: Заглавие, widget: string }
+      - { name: description, label: Кратко описание, widget: text }
+      - { name: date, label: Начална дата, widget: datetime, format: 'YYYY-MM-DDTHH:mm', date_format: 'DD.MM.YYYY', time_format: 'HH:mm', picker_utc: false }
+      - { name: endDate, label: Крайна дата (по избор), widget: datetime, required: false, format: 'YYYY-MM-DDTHH:mm', date_format: 'DD.MM.YYYY', time_format: 'HH:mm', picker_utc: false }
+      - { name: location, label: Място, widget: string, default: 'Медицински център Nuviva, София' }
+      - { name: cover, label: Корица, widget: image, required: false }
+      - { name: coverAlt, label: Описание на корицата, widget: string, required: false }
+      - { name: registrationPhone, label: Телефон за записване, widget: string, required: false }
+      - { name: registrationLink, label: Линк за записване, widget: string, required: false }
+      - name: speakers
+        label: Лектори
+        widget: list
+        required: false
+        hint: "Имена на лекторите, по едно на ред"
+        field: { name: name, label: Име, widget: string }
+      - { name: draft, label: Чернова, widget: boolean, default: false }
+      - { name: body, label: Подробно описание, widget: markdown }
+
+  - name: team
+    label: Екип
+    label_singular: Член на екипа
+    folder: src/content/team
+    create: true
+    delete: true
+    slug: '{{slug}}'
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: name, label: Име, widget: string }
+      - { name: role, label: Роля / Професия, widget: string, hint: "Напр. 'Педиатър и клиничен психолог'" }
+      - { name: photo, label: Снимка, widget: image, required: false }
+      - { name: photoAlt, label: Описание на снимката, widget: string, required: false }
+      - { name: founder, label: Съосновател, widget: boolean, default: false, hint: "Маркирай ако този човек е съосновател на Mamaland" }
+      - { name: order, label: Подредба, widget: number, default: 99, value_type: int, hint: "По-малки числа = по-напред" }
+      - { name: body, label: Биография, widget: markdown }

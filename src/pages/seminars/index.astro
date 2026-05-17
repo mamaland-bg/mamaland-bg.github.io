@@ -1,0 +1,127 @@
+---
+import Base from '../../layouts/Base.astro';
+import SeminarCard from '../../components/SeminarCard.astro';
+import { getCollection } from 'astro:content';
+
+const all = await getCollection('seminars', ({ data }) => !data.draft);
+const now = new Date();
+
+const upcoming = all
+  .filter(s => new Date(s.data.date) >= now)
+  .sort((a, b) => new Date(a.data.date).valueOf() - new Date(b.data.date).valueOf());
+
+const past = all
+  .filter(s => new Date(s.data.date) < now)
+  .sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf());
+---
+
+<Base title="Семинари — Mamaland" description="Предстоящи семинари за родители — детско здраве, развитие и психология.">
+
+  <section class="page-hero">
+    <div class="container-narrow">
+      <div class="eyebrow">СЪБИТИЯ</div>
+      <h1 class="script">Семинари</h1>
+      <p class="page-lede">
+        Срещи на живо за родители — място да зададете въпросите, които
+        не се побират в кратко съобщение, и да чуете отговори от хора с опит.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-white">
+    <div class="container">
+      <header class="section-header">
+        <div class="eyebrow">ПРЕДСТОЯЩИ</div>
+        <h2 class="script section-script">скоро</h2>
+      </header>
+
+      {upcoming.length > 0 ? (
+        <div class="seminars-list">
+          {upcoming.map(s => (
+            <SeminarCard
+              title={s.data.title}
+              date={s.data.date}
+              endDate={s.data.endDate}
+              location={s.data.location}
+              description={s.data.description}
+              slug={s.id}
+              cover={s.data.cover}
+              coverAlt={s.data.coverAlt}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">
+          В момента няма насрочени семинари. Запишете се за нашия бюлетин или
+          следете Instagram, за да научите за следващите.
+        </p>
+      )}
+    </div>
+  </section>
+
+  {past.length > 0 && (
+    <section class="section section-cream">
+      <div class="container">
+        <header class="section-header">
+          <div class="eyebrow">АРХИВ</div>
+          <h2 class="script section-script">минали семинари</h2>
+        </header>
+
+        <div class="seminars-list">
+          {past.map(s => (
+            <SeminarCard
+              title={s.data.title}
+              date={s.data.date}
+              endDate={s.data.endDate}
+              location={s.data.location}
+              description={s.data.description}
+              slug={s.id}
+              cover={s.data.cover}
+              coverAlt={s.data.coverAlt}
+              isPast={true}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+</Base>
+
+<style>
+  .page-hero {
+    background: var(--color-cream);
+    padding: var(--space-xl) 0 var(--space-lg);
+    text-align: center;
+  }
+
+  .page-hero .script {
+    font-size: clamp(3rem, 7vw, 5rem);
+    margin: 0.5rem 0 1rem;
+  }
+
+  .page-lede {
+    color: var(--color-ink-soft);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .section-script {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-top: 0.25rem;
+  }
+
+  .seminars-list {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--color-ink-muted);
+    font-style: italic;
+    padding: 3rem 1rem;
+    font-size: 1.05rem;
+  }
+</style>

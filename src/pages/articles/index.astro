@@ -1,0 +1,159 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { CATEGORIES } from '../../lib/categories';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf());
+
+const usedCategories = Array.from(new Set(articles.map(a => a.data.category)));
+---
+
+<Base title="Статии — Mamaland" description="Статии за детското здраве, развитие и психология.">
+
+  <section class="page-hero">
+    <div class="container-narrow">
+      <div class="eyebrow">БЛОГ</div>
+      <h1 class="script">Статии</h1>
+      <p class="page-lede">
+        Научно базирани прочити за детското здраве, развитие и психология —
+        обяснени с топлота и без излишен жаргон.
+      </p>
+    </div>
+  </section>
+
+  {usedCategories.length > 0 && (
+    <section class="filter-bar">
+      <div class="container">
+        <div class="filter-chips" role="tablist">
+          <button class="chip is-active" data-filter="all">Всички</button>
+          {usedCategories.map(cat => (
+            <button class={`chip chip-${CATEGORIES[cat]?.tone || 'brown'}`} data-filter={cat}>
+              {CATEGORIES[cat]?.label || cat}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section section-white">
+    <div class="container">
+      {articles.length > 0 ? (
+        <div class="article-grid" id="article-grid">
+          {articles.map(article => (
+            <div class="grid-item" data-category={article.data.category}>
+              <ArticleCard
+                title={article.data.title}
+                excerpt={article.data.excerpt}
+                slug={article.id}
+                category={article.data.category}
+                date={article.data.date}
+                cover={article.data.cover}
+                coverAlt={article.data.coverAlt}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">
+          Скоро ще намерите тук първите статии. Засега можете да следите Mamaland Sofia в Instagram.
+        </p>
+      )}
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .page-hero {
+    background: var(--color-cream);
+    padding: var(--space-xl) 0 var(--space-lg);
+    text-align: center;
+  }
+
+  .page-hero .script {
+    font-size: clamp(3rem, 7vw, 5rem);
+    margin: 0.5rem 0 1rem;
+  }
+
+  .page-lede {
+    color: var(--color-ink-soft);
+    font-size: 1.05rem;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  .filter-bar {
+    background: var(--color-cream);
+    padding: 0 0 var(--space-md);
+  }
+
+  .filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .chip {
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-periwinkle-light);
+    background: transparent;
+    color: var(--color-ink-soft);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .chip:hover {
+    background: var(--color-periwinkle-bg);
+    color: var(--color-periwinkle-dark);
+  }
+
+  .chip.is-active {
+    background: var(--color-periwinkle);
+    color: var(--color-cream);
+    border-color: var(--color-periwinkle);
+  }
+
+  .article-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .grid-item.is-hidden {
+    display: none;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--color-ink-muted);
+    font-style: italic;
+    padding: 4rem 0;
+    font-size: 1.05rem;
+  }
+</style>
+
+<script>
+  const chips = document.querySelectorAll('.chip');
+  const items = document.querySelectorAll('.grid-item');
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const filter = (chip as HTMLElement).dataset.filter;
+      chips.forEach(c => c.classList.remove('is-active'));
+      chip.classList.add('is-active');
+
+      items.forEach(item => {
+        const cat = (item as HTMLElement).dataset.category;
+        const show = filter === 'all' || cat === filter;
+        item.classList.toggle('is-hidden', !show);
+      });
+    });
+  });
+</script>

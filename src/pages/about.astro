@@ -1,0 +1,260 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+const team = (await getCollection('team'))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const founders = team.filter(m => m.data.founder);
+const others = team.filter(m => !m.data.founder);
+---
+
+<Base title="За нас — Mamaland" description="Запознайте се с екипа на Mamaland Sofia.">
+
+  <section class="page-hero">
+    <div class="container-narrow">
+      <div class="eyebrow">ЗАПОЗНАЙТЕ СЕ</div>
+      <h1 class="script">с нас</h1>
+      <p class="page-lede">
+        Mamaland е място, в което смесваме професионалния опит на работа
+        с деца със собственото си родителско сърце. Тук вярваме, че
+        информираните родители са най-доброто лекарство.
+      </p>
+    </div>
+  </section>
+
+  <section class="section section-white">
+    <div class="container">
+      {founders.length === 0 ? (
+        <p class="empty-state">Скоро тук ще има биографии на екипа.</p>
+      ) : (
+        <div class="team-list">
+          {founders.map(async (member) => {
+            const { Content } = await render(member);
+            return (
+              <article class="team-member">
+                <div class="member-photo-wrap">
+                  {member.data.photo ? (
+                    <Image
+                      src={member.data.photo}
+                      alt={member.data.photoAlt || member.data.name}
+                      class="member-photo"
+                      widths={[300, 500]}
+                      sizes="(max-width: 768px) 100vw, 360px"
+                    />
+                  ) : (
+                    <div class="member-photo-placeholder">
+                      <span>✦</span>
+                    </div>
+                  )}
+                </div>
+                <div class="member-text">
+                  <div class="member-eyebrow">{member.data.founder ? 'СЪОСНОВАТЕЛ' : 'ЕКИП'}</div>
+                  <h2 class="member-name">{member.data.name}</h2>
+                  <p class="member-role">{member.data.role}</p>
+                  <div class="member-bio">
+                    <Content />
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  </section>
+
+  {others.length > 0 && (
+    <section class="section section-cream">
+      <div class="container">
+        <header class="section-header">
+          <div class="eyebrow">ЕКИПЪТ</div>
+          <h2 class="script section-script">наши колеги</h2>
+        </header>
+        <div class="team-grid">
+          {others.map(member => (
+            <div class="team-card">
+              {member.data.photo && (
+                <Image
+                  src={member.data.photo}
+                  alt={member.data.photoAlt || member.data.name}
+                  class="team-card-photo"
+                  widths={[200, 300]}
+                />
+              )}
+              <h3>{member.data.name}</h3>
+              <p class="team-card-role">{member.data.role}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section section-periwinkle">
+    <div class="container-narrow" style="text-align: center;">
+      <h2 class="script">имате въпрос?</h2>
+      <p style="opacity: 0.9; margin: 1rem auto 2rem; max-width: 480px;">
+        Пишете ни — отговаряме на всяко съобщение лично.
+      </p>
+      <a href="/contact" class="btn btn-secondary">Свържете се с нас →</a>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .page-hero {
+    background: var(--color-cream);
+    padding: var(--space-xl) 0 var(--space-lg);
+    text-align: center;
+  }
+
+  .page-hero .script {
+    font-size: clamp(3rem, 7vw, 5rem);
+    margin: 0.5rem 0 1rem;
+  }
+
+  .page-lede {
+    color: var(--color-ink-soft);
+    font-size: 1.05rem;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--color-ink-muted);
+    font-style: italic;
+    padding: 3rem 0;
+  }
+
+  .team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+  }
+
+  .team-member {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .team-member:nth-child(even) {
+    grid-template-columns: 1.6fr 1fr;
+  }
+
+  .team-member:nth-child(even) .member-photo-wrap {
+    order: 2;
+  }
+
+  .member-photo-wrap {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 65% 35% 60% 40% / 50% 60% 40% 50%;
+    background: var(--color-sage-bg);
+  }
+
+  .member-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .member-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--color-sage) 0%, var(--color-periwinkle-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-cream);
+    font-size: 4rem;
+    opacity: 0.6;
+  }
+
+  .member-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-brown-warm);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .member-name {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .member-role {
+    font-family: var(--font-script);
+    font-size: 1.5rem;
+    color: var(--color-periwinkle-dark);
+    margin-bottom: 1.5rem;
+  }
+
+  .member-bio {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: var(--color-ink);
+  }
+
+  .member-bio :global(p) {
+    margin-bottom: 1rem;
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+
+  .team-card {
+    text-align: center;
+  }
+
+  .team-card-photo {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 1rem;
+  }
+
+  .team-card h3 {
+    font-size: 1.15rem;
+  }
+
+  .team-card-role {
+    color: var(--color-ink-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  .section-script {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-top: 0.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .team-member,
+    .team-member:nth-child(even) {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .team-member:nth-child(even) .member-photo-wrap {
+      order: 0;
+    }
+
+    .member-photo-wrap {
+      max-width: 280px;
+      margin: 0 auto;
+    }
+  }
+</style>

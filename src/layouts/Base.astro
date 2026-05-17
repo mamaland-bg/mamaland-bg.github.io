@@ -1,0 +1,284 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title = 'Mamaland — Здраве и спокойствие за всяко малко сърце',
+  description = 'Прочити, статии и семинари за детското здраве и развитие — от педиатър и психолог.',
+  image = '/og-image.jpg'
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalURL} />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={new URL(image, Astro.site)} />
+  <meta property="og:locale" content="bg_BG" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="site-logo">
+        <span class="logo-script">mamaland</span>
+      </a>
+      <nav class="site-nav" aria-label="Главна навигация">
+        <a href="/">Начало</a>
+        <a href="/articles">Статии</a>
+        <a href="/seminars">Семинари</a>
+        <a href="/about">За нас</a>
+        <a href="/contact">Контакт</a>
+      </nav>
+      <button class="nav-toggle" aria-label="Меню" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <div class="logo-script footer-logo">mamaland</div>
+        <p class="footer-tagline">Здраве и спокойствие за всяко малко сърце</p>
+      </div>
+
+      <div class="footer-links">
+        <h4>Навигация</h4>
+        <a href="/articles">Статии</a>
+        <a href="/seminars">Семинари</a>
+        <a href="/about">За нас</a>
+        <a href="/contact">Контакт</a>
+      </div>
+
+      <div class="footer-links">
+        <h4>Връзка</h4>
+        <a href="https://www.instagram.com/mamaland.sofia/" target="_blank" rel="noopener">Instagram</a>
+        <a href="mailto:hello@mamaland.bg">hello@mamaland.bg</a>
+        <p class="footer-note">Медицински център Nuviva<br/>Бул. Черни връх 155, София</p>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span class="sparkle">✦</span>
+      <p>&copy; {new Date().getFullYear()} Mamaland. Всички права запазени.</p>
+    </div>
+  </footer>
+
+  <style>
+    .site-header {
+      background: var(--color-periwinkle);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .site-logo {
+      text-decoration: none;
+      display: flex;
+      align-items: baseline;
+      gap: 0.15rem;
+    }
+
+    .logo-script {
+      font-family: var(--font-script);
+      font-size: 1.75rem;
+      color: var(--color-cream);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+
+    .logo-suffix {
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      color: var(--color-cream);
+      opacity: 0.75;
+      letter-spacing: 0.05em;
+    }
+
+    .site-nav {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .site-nav a {
+      color: var(--color-cream);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      opacity: 0.9;
+      transition: opacity 0.2s ease;
+    }
+
+    .site-nav a:hover {
+      opacity: 1;
+      color: var(--color-cream);
+    }
+
+    .nav-toggle {
+      display: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      flex-direction: column;
+      gap: 4px;
+      padding: 0.5rem;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--color-cream);
+      border-radius: 2px;
+    }
+
+    .site-footer {
+      background: var(--color-periwinkle-dark);
+      color: var(--color-cream);
+      padding: var(--space-xl) 0 var(--space-md);
+      margin-top: var(--space-xl);
+    }
+
+    .footer-inner {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1.5fr;
+      gap: var(--space-lg);
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid rgba(245, 237, 224, 0.15);
+    }
+
+    .footer-logo {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-tagline {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--color-cream);
+      opacity: 0.85;
+      font-size: 1rem;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .footer-links h4 {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-cream);
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .footer-links a {
+      color: var(--color-cream);
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .footer-links a:hover {
+      color: var(--color-peach);
+      opacity: 1;
+    }
+
+    .footer-note {
+      font-size: 0.85rem;
+      color: var(--color-cream);
+      opacity: 0.75;
+      margin-top: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding-top: var(--space-md);
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .footer-bottom p {
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .site-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--color-periwinkle);
+        flex-direction: column;
+        padding: 1rem 2rem 1.5rem;
+        gap: 1rem;
+      }
+
+      .site-nav.open {
+        display: flex;
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script>
+    const toggle = document.querySelector('.nav-toggle');
+    const nav = document.querySelector('.site-nav');
+    toggle?.addEventListener('click', () => {
+      const isOpen = nav?.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,160 @@
+---
+import { Image } from 'astro:assets';
+
+export interface Props {
+  title: string;
+  date: Date;
+  endDate?: Date;
+  location: string;
+  description: string;
+  slug: string;
+  cover?: any;
+  coverAlt?: string;
+  isPast?: boolean;
+}
+
+const { title, date, endDate, location, description, slug, cover, coverAlt, isPast = false } = Astro.props;
+
+const startDate = new Date(date);
+const dateFmt = new Intl.DateTimeFormat('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' });
+const formattedDate = endDate
+  ? `${dateFmt.format(startDate)} – ${dateFmt.format(new Date(endDate))}`
+  : dateFmt.format(startDate);
+---
+
+<article class={`seminar-card ${isPast ? 'is-past' : ''}`}>
+  <a href={`/seminars/${slug}`} class="seminar-link">
+    <div class="seminar-cover">
+      {cover ? (
+        <Image src={cover} alt={coverAlt || title} class="seminar-image" widths={[400, 600]} sizes="(max-width: 768px) 100vw, 50vw" />
+      ) : (
+        <div class="seminar-image-placeholder">
+          <span class="placeholder-mark">✦</span>
+        </div>
+      )}
+      {!isPast && <div class="seminar-badge">Предстоящ</div>}
+    </div>
+    <div class="seminar-body">
+      <time class="seminar-date" datetime={startDate.toISOString()}>{formattedDate}</time>
+      <h3 class="seminar-title">{title}</h3>
+      <p class="seminar-location">📍 {location}</p>
+      <p class="seminar-desc">{description}</p>
+      <span class="seminar-cta">Прочети повече →</span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .seminar-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+
+  .seminar-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .seminar-card.is-past {
+    opacity: 0.85;
+  }
+
+  .seminar-link {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .seminar-cover {
+    position: relative;
+    background: var(--color-periwinkle-bg);
+    overflow: hidden;
+  }
+
+  .seminar-image,
+  .seminar-image-placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    object-fit: cover;
+  }
+
+  .seminar-image-placeholder {
+    background: linear-gradient(135deg, var(--color-periwinkle) 0%, var(--color-periwinkle-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .placeholder-mark {
+    font-size: 3rem;
+    color: var(--color-cream);
+    opacity: 0.6;
+  }
+
+  .seminar-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--color-peach);
+    color: var(--color-peach-deep);
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .seminar-body {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .seminar-date {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-brown-warm);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+
+  .seminar-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--color-ink);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+
+  .seminar-location {
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .seminar-desc {
+    font-size: 0.9rem;
+    color: var(--color-ink-soft);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .seminar-cta {
+    color: var(--color-periwinkle-dark);
+    font-weight: 600;
+    font-size: 0.9rem;
+    align-self: flex-start;
+  }
+
+  @media (max-width: 768px) {
+    .seminar-link {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

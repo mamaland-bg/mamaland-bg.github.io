@@ -1,0 +1,208 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const seminars = await getCollection('seminars', ({ data }) => !data.draft);
+  return seminars.map(s => ({
+    params: { slug: s.id },
+    props: { seminar: s }
+  }));
+}
+
+interface Props {
+  seminar: CollectionEntry<'seminars'>;
+}
+
+const { seminar } = Astro.props;
+const { Content } = await render(seminar);
+
+const startDate = new Date(seminar.data.date);
+const endDate = seminar.data.endDate ? new Date(seminar.data.endDate) : null;
+const now = new Date();
+const isPast = startDate < now;
+
+const dateFmt = new Intl.DateTimeFormat('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' });
+const timeFmt = new Intl.DateTimeFormat('bg-BG', { hour: '2-digit', minute: '2-digit' });
+
+const formattedDate = endDate
+  ? `${dateFmt.format(startDate)} – ${dateFmt.format(endDate)}`
+  : dateFmt.format(startDate);
+---
+
+<Base title={`${seminar.data.title} — Mamaland`} description={seminar.data.description}>
+
+  <article class="seminar-page">
+
+    <header class="seminar-header">
+      <div class="container-narrow">
+        <a href="/seminars" class="back-link">← Към всички семинари</a>
+        <div class="eyebrow">{isPast ? 'МИНАЛ СЕМИНАР' : 'ПРЕДСТОЯЩ СЕМИНАР'}</div>
+        <h1 class="seminar-title">{seminar.data.title}</h1>
+
+        <div class="seminar-info-grid">
+          <div class="info-item">
+            <div class="info-label">📅 Дата</div>
+            <div class="info-value">{formattedDate}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">📍 Място</div>
+            <div class="info-value">{seminar.data.location}</div>
+          </div>
+          {seminar.data.speakers.length > 0 && (
+            <div class="info-item">
+              <div class="info-label">👥 Лектори</div>
+              <div class="info-value">{seminar.data.speakers.join(', ')}</div>
+            </div>
+          )}
+        </div>
+
+        {!isPast && (seminar.data.registrationPhone || seminar.data.registrationLink) && (
+          <div class="register-box">
+            <p class="register-title">Запишете се</p>
+            {seminar.data.registrationPhone && (
+              <a href={`tel:${seminar.data.registrationPhone}`} class="btn btn-primary">
+                📞 {seminar.data.registrationPhone}
+              </a>
+            )}
+            {seminar.data.registrationLink && (
+              <a href={seminar.data.registrationLink} target="_blank" rel="noopener" class="btn btn-secondary">
+                Записване онлайн →
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    </header>
+
+    {seminar.data.cover && (
+      <div class="seminar-cover-wrap">
+        <div class="container-narrow">
+          <Image
+            src={seminar.data.cover}
+            alt={seminar.data.coverAlt || seminar.data.title}
+            class="seminar-cover"
+            widths={[600, 900, 1200]}
+            sizes="(max-width: 768px) 100vw, 720px"
+          />
+        </div>
+      </div>
+    )}
+
+    <div class="seminar-body">
+      <div class="container-narrow">
+        <div class="seminar-desc-lead">{seminar.data.description}</div>
+        <div class="prose">
+          <Content />
+        </div>
+      </div>
+    </div>
+
+  </article>
+
+</Base>
+
+<style>
+  .seminar-page { background: #fff; }
+
+  .seminar-header {
+    background: var(--color-cream);
+    padding: var(--space-xl) 0 var(--space-lg);
+    text-align: center;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+  }
+
+  .seminar-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.15;
+    margin: 1rem 0 2rem;
+  }
+
+  .seminar-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem auto;
+    max-width: 600px;
+    text-align: left;
+  }
+
+  .info-item {
+    background: #fff;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+
+  .info-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-brown-warm);
+    margin-bottom: 0.35rem;
+    font-weight: 600;
+  }
+
+  .info-value {
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+  }
+
+  .register-box {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .register-title {
+    font-family: var(--font-script);
+    font-size: 2rem;
+    color: var(--color-periwinkle-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .seminar-cover-wrap {
+    background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-cream) 50%, #fff 50%, #fff 100%);
+    padding-top: var(--space-md);
+  }
+
+  .seminar-cover {
+    width: 100%;
+    border-radius: var(--radius-lg);
+  }
+
+  .seminar-body {
+    padding: var(--space-xl) 0;
+  }
+
+  .seminar-desc-lead {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--color-ink-soft);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .prose {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--color-ink);
+  }
+
+  .prose :global(p) { margin-bottom: 1.5rem; }
+  .prose :global(h2) { font-size: 1.5rem; margin: 2rem 0 1rem; color: var(--color-periwinkle-dark); }
+  .prose :global(ul), .prose :global(ol) { margin: 1rem 0 1.5rem; padding-left: 1.5rem; }
+</style>

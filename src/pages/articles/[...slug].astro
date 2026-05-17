@@ -1,0 +1,282 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { CATEGORIES } from '../../lib/categories';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles', ({ data }) => !data.draft);
+  return articles.map(article => ({
+    params: { slug: article.id },
+    props: { article }
+  }));
+}
+
+interface Props {
+  article: CollectionEntry<'articles'>;
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const cat = CATEGORIES[article.data.category] || CATEGORIES.obshto;
+const formattedDate = new Intl.DateTimeFormat('bg-BG', {
+  day: 'numeric', month: 'long', year: 'numeric'
+}).format(new Date(article.data.date));
+
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+const related = allArticles
+  .filter(a => a.id !== article.id && a.data.category === article.data.category)
+  .sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf())
+  .slice(0, 2);
+---
+
+<Base title={`${article.data.title} — Mamaland`} description={article.data.excerpt}>
+
+  <article class="article-page">
+
+    <header class="article-header">
+      <div class="container-narrow">
+        <a href="/articles" class="back-link">← Към всички статии</a>
+        <div class={`article-eyebrow eyebrow-${cat.tone}`}>{cat.label}</div>
+        <h1 class="article-title">{article.data.title}</h1>
+        <p class="article-excerpt">{article.data.excerpt}</p>
+        <div class="article-meta">
+          <span>{article.data.author}</span>
+          <span class="meta-dot">·</span>
+          <time datetime={new Date(article.data.date).toISOString()}>{formattedDate}</time>
+        </div>
+      </div>
+    </header>
+
+    {article.data.cover && (
+      <div class="article-cover-wrap">
+        <div class="container-narrow">
+          <Image
+            src={article.data.cover}
+            alt={article.data.coverAlt || article.data.title}
+            class="article-cover"
+            widths={[600, 900, 1200]}
+            sizes="(max-width: 768px) 100vw, 720px"
+          />
+        </div>
+      </div>
+    )}
+
+    <div class="article-body">
+      <div class="container-narrow">
+        <div class="prose">
+          <Content />
+        </div>
+
+        <div class="article-footer">
+          <div class="divider-sparkle"></div>
+          <p class="share-prompt">Тази статия е полезна? Споделете я с приятел.</p>
+          <div class="share-buttons">
+            <a href={`https://www.facebook.com/sharer/sharer.php?u=${Astro.url}`} target="_blank" rel="noopener" class="share-btn">Facebook</a>
+            <a href="https://www.instagram.com/mamaland.sofia/" target="_blank" rel="noopener" class="share-btn">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {related.length > 0 && (
+      <section class="section section-cream related-section">
+        <div class="container">
+          <header class="section-header">
+            <div class="eyebrow">ПРОЧЕТИ СЪЩО</div>
+            <h2 class="script section-script">подобни статии</h2>
+          </header>
+          <div class="related-grid">
+            {related.map(r => (
+              <ArticleCard
+                title={r.data.title}
+                excerpt={r.data.excerpt}
+                slug={r.id}
+                category={r.data.category}
+                date={r.data.date}
+                cover={r.data.cover}
+                coverAlt={r.data.coverAlt}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+  </article>
+
+</Base>
+
+<style>
+  .article-page {
+    background: #fff;
+  }
+
+  .article-header {
+    background: var(--color-cream);
+    padding: var(--space-xl) 0 var(--space-lg);
+    text-align: center;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+  }
+
+  .back-link:hover {
+    color: var(--color-periwinkle-dark);
+  }
+
+  .article-eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .eyebrow-sage { color: var(--color-sage-dark); }
+  .eyebrow-peach { color: var(--color-peach-dark); }
+  .eyebrow-periwinkle { color: var(--color-periwinkle-dark); }
+  .eyebrow-pink { color: #B85B6E; }
+  .eyebrow-brown { color: var(--color-brown); }
+
+  .article-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+  }
+
+  .article-excerpt {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--color-ink-soft);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .article-meta {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+  }
+
+  .meta-dot {
+    opacity: 0.5;
+  }
+
+  .article-cover-wrap {
+    background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-cream) 50%, #fff 50%, #fff 100%);
+    padding-top: var(--space-md);
+  }
+
+  .article-cover {
+    width: 100%;
+    border-radius: var(--radius-lg);
+  }
+
+  .article-body {
+    padding: var(--space-xl) 0;
+  }
+
+  .prose {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--color-ink);
+  }
+
+  .prose :global(p) {
+    margin-bottom: 1.5rem;
+  }
+
+  .prose :global(h2) {
+    font-size: 1.75rem;
+    margin: 2.5rem 0 1rem;
+    color: var(--color-periwinkle-dark);
+  }
+
+  .prose :global(h3) {
+    font-size: 1.35rem;
+    margin: 2rem 0 0.75rem;
+  }
+
+  .prose :global(blockquote) {
+    border-left: 3px solid var(--color-peach);
+    padding: 0.5rem 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    color: var(--color-ink-soft);
+    background: var(--color-cream);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 1rem 0 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose :global(img) {
+    border-radius: var(--radius-md);
+    margin: 2rem auto;
+  }
+
+  .prose :global(a) {
+    text-decoration: underline;
+    text-decoration-color: var(--color-peach);
+    text-underline-offset: 3px;
+  }
+
+  .article-footer {
+    margin-top: 3rem;
+    text-align: center;
+  }
+
+  .share-prompt {
+    color: var(--color-ink-soft);
+    font-family: var(--font-serif);
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+
+  .share-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .share-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 999px;
+    background: var(--color-periwinkle-bg);
+    color: var(--color-periwinkle-dark);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .share-btn:hover {
+    background: var(--color-periwinkle);
+    color: var(--color-cream);
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .section-script {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-top: 0.25rem;
+  }
+</style>
