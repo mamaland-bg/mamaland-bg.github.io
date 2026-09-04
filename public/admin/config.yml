@@ -44,13 +44,11 @@ collections:
     fields:
       - name: draft
         label: Статус
-        widget: select
-        value_type: boolean
-        options:
-          - { label: "✏️  Чернова (не се вижда на сайта)", value: true }
-          - { label: "✅  Публикувана", value: false }
+        widget: boolean
         default: true
-        hint: "Смени на 'Публикувана' когато статията е готова"
+        before_input: "✅ Публикувана"
+        after_input: "✏️ Чернова"
+        hint: "Включено = чернова (не се вижда на сайта). Изключено = публикувана."
       - { name: title, label: Заглавие, widget: string }
       - { name: excerpt, label: Кратко описание, widget: text, hint: "1-2 изречения — показва се в листинга и при споделяне" }
       - name: category
@@ -92,13 +90,11 @@ collections:
     fields:
       - name: draft
         label: Статус
-        widget: select
-        value_type: boolean
-        options:
-          - { label: "✏️  Чернова (не се вижда на сайта)", value: true }
-          - { label: "✅  Публикуван", value: false }
+        widget: boolean
         default: true
-        hint: "Смени на 'Публикуван' когато семинарът е готов за обявяване"
+        before_input: "✅ Публикуван"
+        after_input: "✏️ Чернова"
+        hint: "Включено = чернова (не се вижда на сайта). Изключено = публикуван."
       - { name: title, label: Заглавие, widget: string }
       - { name: description, label: Кратко описание, widget: text, hint: "Едно-две изречения за какво ще е семинарът" }
       - { name: date, label: Начало (дата и час), widget: datetime, format: 'YYYY-MM-DDTHH:mm', date_format: 'DD.MM.YYYY', time_format: 'HH:mm', picker_utc: false }
