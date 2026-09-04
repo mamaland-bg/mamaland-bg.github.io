@@ -45,6 +45,7 @@ collections:
       - name: draft
         label: Статус
         widget: select
+        value_type: boolean
         options:
           - { label: "✏️  Чернова (не се вижда на сайта)", value: true }
           - { label: "✅  Публикувана", value: false }
@@ -92,6 +93,7 @@ collections:
       - name: draft
         label: Статус
         widget: select
+        value_type: boolean
         options:
           - { label: "✏️  Чернова (не се вижда на сайта)", value: true }
           - { label: "✅  Публикуван", value: false }
